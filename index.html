@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#1565C0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="蛋妈计算宝典">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href='data:application/manifest+json,{"name":"%E8%9B%8B%E5%A6%88%E8%AE%A1%E7%AE%97%E5%AE%9D%E5%85%B8","short_name":"%E8%9B%8B%E5%A6%88%E8%AE%A1%E7%AE%97","start_url":".","display":"standalone","background_color":"#FFFDE7","theme_color":"#1565C0","orientation":"portrait"}'>
+<title>蛋妈计算宝典</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+:root{--bg:#FFFDE7;--card:#FFF8E1;--card-green:#E3F2FD;--border:#90CAF9;--primary:#1565C0;--pl:#42A5F5;--pd:#0D47A1;--blue:#1976D2;--text:#333;--t2:#555;--t3:#999;--danger:#f44336;--warn:#ff9800;--r:12px}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);max-width:480px;margin:0 auto;height:100dvh;font-size:15px;overflow:hidden;position:relative}
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden;position:relative}
+#content{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.header{background:var(--primary);color:#fff;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px;flex-shrink:0;z-index:100}
+.header .back{font-size:22px;cursor:pointer;padding:4px;line-height:1}
+.header .title{flex:1}
+.header .right{font-size:14px;opacity:.9}
+.content{padding:10px;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+.card-h{padding:11px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:600;font-size:16px;color:var(--pd)}
+.card-h .arrow{transition:transform .3s;font-size:14px;color:var(--t3)}
+.card.collapsed .arrow{transform:rotate(-90deg)}
+.card-b{padding:0 16px 12px;display:block}
+.card.collapsed .card-b{display:none}
+.card-sub{font-size:13px;color:var(--t2);margin-top:4px;font-weight:400}
+.btn{display:inline-block;padding:10px 20px;border:none;border-radius:8px;font-size:15px;cursor:pointer;text-align:center;text-decoration:none;color:#fff;transition:opacity .2s}
+.btn:active{opacity:.7}
+.btn-green{background:var(--primary)}
+.btn-blue{background:var(--blue)}
+.btn-gray{background:#e0e0e0;color:var(--text)}
+.btn-outline{background:transparent;border:1px solid var(--primary);color:var(--primary)}
+.btn-block{display:block;width:100%}
+.btn-sm{padding:6px 14px;font-size:13px}
+.tab-bar{flex-shrink:0;width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom)}
+.tab{flex:1;text-align:center;padding:10px 0 12px;color:var(--t3);font-size:12px;cursor:pointer;position:relative}
+.tab.active{color:var(--primary)}
+.tab .icon{font-size:22px;display:block;margin-bottom:2px;line-height:1}
+.fab{position:absolute;bottom:calc(76px + env(safe-area-inset-bottom));right:20px;width:52px;height:52px;border-radius:50%;background:var(--blue);color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:150;box-shadow:0 4px 12px rgba(33,150,243,.4);border:none;line-height:1}
+.fab:active{transform:scale(.92)}
+.keypad{background:var(--card-green);padding:8px;border-radius:0 0 var(--r) var(--r)}
+.kp-row{display:flex;gap:6px;margin-bottom:6px}
+.kp-row:last-child{margin-bottom:0}
+.key{flex:1;padding:14px 0;text-align:center;font-size:20px;border:none;border-radius:8px;background:var(--card);cursor:pointer;font-weight:500;transition:background .1s;min-height:48px}
+.key:active{background:#BBDEFB}
+.key.confirm{background:var(--primary);color:#fff;font-size:16px}
+.key.confirm:active{background:var(--pd)}
+.key.action{background:var(--card-green);color:var(--pd);font-size:14px}
+.key.action:active{background:var(--border)}
+.q-display{background:var(--card-green);border:1px solid var(--border);border-radius:var(--r);padding:24px 16px;text-align:center;margin-bottom:12px}
+.q-display .formula{font-size:32px;font-weight:700;color:var(--pd);margin-bottom:8px}
+.q-display .hint{font-size:13px;color:var(--t2)}
+.q-display .input-show{font-size:28px;font-weight:600;color:var(--blue);min-height:36px;margin-top:8px;border-bottom:2px solid var(--border);padding-bottom:4px}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;margin-bottom:12px;overflow:hidden}
+.progress-bar .fill{height:100%;background:var(--primary);transition:width .3s;border-radius:3px}
+.timer-display{font-size:16px;font-weight:600;color:var(--pd);font-variant-numeric:tabular-nums}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 0}
+.type-item{background:var(--card-green);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;font-size:14px;cursor:pointer;color:var(--pd);font-weight:500}
+.type-item:active{background:var(--border)}
+.type-item.selected{background:var(--primary);color:#fff;border-color:var(--primary)}
+.input-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.input-row label{font-size:14px;color:var(--t2);white-space:nowrap}
+.input-row select,.input-row input{flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--card)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--card);border-radius:var(--r);padding:20px;max-width:360px;width:100%;max-height:80vh;overflow-y:auto}
+.modal-box h3{margin-bottom:12px;color:var(--pd)}
+.modal-box .form-group{margin-bottom:12px}
+.modal-box .form-group label{display:block;font-size:13px;color:var(--t2);margin-bottom:4px}
+.modal-box .form-group input,.modal-box .form-group select,.modal-box .form-group textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:14px}
+.modal-box .form-group textarea{height:80px;resize:none}
+.modal-box .btn-row{display:flex;gap:8px;margin-top:12px}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:400;display:none;max-width:300px;text-align:center}
+.toast.show{display:block}
+.toast.error{background:rgba(244,67,54,.85)}
+.toast.success{background:rgba(21,101,192,.85)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle{width:44px;height:24px;border-radius:12px;background:#ccc;position:relative;cursor:pointer;transition:background .2s}
+.toggle.on{background:var(--primary)}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s}
+.toggle.on::after{left:22px}
+.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.game-item{background:var(--card-green);border:1px solid var(--border);border-radius:8px;padding:14px 8px;text-align:center;cursor:pointer}
+.game-item:active{background:var(--border)}
+.game-item .gi-icon{font-size:28px;margin-bottom:4px}
+.game-item .gi-name{font-size:13px;color:var(--pd);font-weight:500}
+.group-title{font-size:14px;color:var(--t2);margin:12px 0 6px;font-weight:600;padding-left:4px}
+.result-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
+.result-item .ri-q{color:var(--t2)}
+.result-item .ri-a{font-weight:600}
+.result-item .ri-a.correct{color:var(--primary)}
+.result-item .ri-a.wrong{color:var(--danger)}
+.schulte-grid{display:grid;gap:4px;margin:12px auto;max-width:340px}
+.schulte-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;user-select:none}
+.schulte-cell:active{background:var(--card-green)}
+.schulte-cell.done{background:var(--primary);color:#fff;border-color:var(--primary)}
+.schulte-cell.wrong{background:var(--danger);color:#fff;animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.stroop-word{font-size:64px;font-weight:700;text-align:center;margin:40px 0}
+.stroop-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stroop-btn{padding:18px;border-radius:12px;border:none;font-size:18px;font-weight:600;cursor:pointer;color:#fff}
+.mem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:16px auto;max-width:320px}
+.mem-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;background:var(--card-green);border:1px solid var(--border);border-radius:8px}
+.mem-cell.hidden{color:transparent;background:var(--primary)}
+.guess-feedback{text-align:center;font-size:18px;padding:20px;font-weight:600}
+.guess-feedback.high{color:var(--danger)}
+.guess-feedback.low{color:var(--blue)}
+.guess-feedback.correct{color:var(--primary)}
+.sudoku-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:12px auto;max-width:300px}
+.sudoku-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;background:var(--card);cursor:pointer}
+.sudoku-cell.given{background:var(--card-green);color:var(--pd)}
+.sudoku-cell.selected{background:var(--blue);color:#fff}
+.sudoku-cell.empty{color:var(--danger)}
+.tf24-nums{display:flex;gap:8px;justify-content:center;margin:20px 0}
+.tf24-num{width:60px;height:60px;border-radius:12px;background:var(--card-green);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--pd)}
+.tf24-input{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:18px;text-align:center;margin-bottom:8px}
+.shape-area{display:flex;justify-content:center;align-items:center;gap:20px;margin:24px 0;flex-wrap:wrap}
+.rot-option{width:80px;height:80px;border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:32px;background:var(--card)}
+.rot-option.selected{border-color:var(--primary);background:var(--card-green)}
+.rot-option:active{background:var(--border)}
+.flash-display{text-align:center;font-size:48px;font-weight:700;margin:60px 0;color:var(--pd);min-height:60px}
+.stat-box{display:flex;gap:8px;margin-bottom:12px}
+.stat-box .stat{flex:1;background:var(--card-green);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.stat-box .stat .val{font-size:22px;font-weight:700;color:var(--pd)}
+.stat-box .stat .lbl{font-size:12px;color:var(--t2);margin-top:2px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--t3)}
+.checkbox-list{display:flex;flex-wrap:wrap;gap:6px}
+.cb-item{padding:6px 12px;border:1px solid var(--border);border-radius:16px;font-size:13px;cursor:pointer;color:var(--t2);background:var(--card)}
+.cb-item.checked{background:var(--primary);color:#fff;border-color:var(--primary)}
+.history-item{padding:10px;border-bottom:1px solid var(--border);font-size:13px}
+.history-item .hi-type{font-weight:600;color:var(--pd)}
+.history-item .hi-stat{color:var(--t2);margin-top:2px}
+.focus-timer{font-size:72px;font-weight:700;text-align:center;color:var(--pd);font-variant-numeric:tabular-nums;margin:40px 0 20px}
+.focus-controls{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+.focus-session{font-size:14px;color:var(--t2);text-align:center}
+.pomodoro-mode{text-align:center;margin-bottom:16px}
+.pomodoro-mode span{display:inline-block;padding:6px 16px;border-radius:16px;font-size:13px;cursor:pointer;margin:0 4px}
+.pomodoro-mode span.active{background:var(--primary);color:#fff}
+.pomodoro-mode span:not(.active){background:var(--card-green);color:var(--pd)}
+.scroll-text{font-size:18px;line-height:2;padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--card);margin:12px 0;white-space:pre-wrap;font-family:monospace}
+.diff-char{cursor:pointer;padding:2px;border-radius:3px}
+.diff-char:hover{background:var(--card-green)}
+.diff-char.found{background:var(--primary);color:#fff}
+.lightning-q{text-align:center;font-size:36px;font-weight:700;margin:40px 0;color:var(--pd)}
+.section-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.info-note{font-size:12px;color:var(--t3);padding:8px 12px;background:#fff9c4;border-radius:8px;margin:8px 0;line-height:1.6}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="content"></div>
+<button class="fab" onclick="openCustomModal()">+</button>
+<div class="tab-bar">
+<div class="tab active" data-tab="practice" onclick="switchTab('practice')"><span class="icon">&#128221;</span>练习</div>
+<div class="tab" data-tab="focus" onclick="switchTab('focus')"><span class="icon">&#9201;</span>专注</div>
+</div>
+</div>
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)"></div>
+<div class="toast" id="toast"></div>
+<script>
+/* ====== 工具函数 ====== */
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
+const rand=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+const shuffle=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmtNum=n=>{if(Number.isInteger(n))return n.toString();return parseFloat(n.toFixed(2)).toString()};
+const pad2=n=>n.toString().padStart(2,'0');
+
+/* ====== 存储模块 ====== */
+const DB={
+  p:'xczs_',
+  get(k,d=null){try{const v=localStorage.getItem(this.p+k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){localStorage.setItem(this.p+k,JSON.stringify(v))},
+  del(k){localStorage.removeItem(this.p+k)},
+  export(){const d={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(this.p))d[k]=localStorage.getItem(k)}return JSON.stringify(d,null,2)},
+  import(s){const d=JSON.parse(s);for(const k in d){if(k.startsWith(this.p))localStorage.setItem(k,d[k])}}
+};
+
+/* ====== 全局状态 ====== */
+let stack=[{view:'practice',params:{}}];
+let inputMode=DB.get('inputMode','touch');
+let practiceData={};
+let growthData={};
+let nrData={};
+let gameData={};
+let timerInterval=null;
+
+/* ====== 导航 ====== */
+function push(view,params={}){stack.push({view,params});render();window.scrollTo(0,0)}
+function pop(){if(stack.length>1){stack.pop();render();window.scrollTo(0,0)}}
+function switchTab(tab){stack=[{view:tab,params:{}}];$$('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='practice')||(i===1&&tab==='focus')));render();window.scrollTo(0,0)}
+function cur(){return stack[stack.length-1]}
+
+/* ====== 渲染分发 ====== */
+function render(){
+  clearInterval(timerInterval);
+  if(typeof clearGameTimeouts==='function')clearGameTimeouts();
+  const{view,params}=cur();
+  const views={practice:practiceView,basicCalcTypes:bctView,basicCalcPractice:bcpView,basicCalcResult:bcrView,
+    growthAmount:growthView,growthResult:growthResultView,dataAnalysis:daView,
+    nrSelect:nrSelectView,nrQuiz:nrQuizView,nrResult:nrResultView,
+    thinking:thinkingView,game:gameView,
+    focus:focusView,history:historyView,errorBook:errorBookView,settings:settingsView,customList:customListView};
+  const fn=views[view]||practiceView;
+  $('#content').innerHTML=fn(params);
+  if(view==='growthAmount')startGrowthTimer();
+  if(view==='basicCalcPractice'&&practiceData.started)startPracticeTimer();
+  if(view==='nrQuiz'&&typeof startNRTimer==='function')startNRTimer();
+  if(view==='game'&&params.type&&typeof startGame==='function')startGame(params.type);
+  if(view==='focus')initFocus();
+}
+
+/* ====== Toast ====== */
+function toast(msg,type=''){
+  const t=$('#toast');
+  t.textContent=msg;
+  t.className='toast show'+(type?' '+type:'');
+  clearTimeout(t._tid);
+  t._tid=setTimeout(()=>t.className='toast',type==='error'?1500:1000);
+}
+
+/* ====== 弹窗 ====== */
+function openModal(html){
+  const o=$('#modalOverlay');
+  o.innerHTML='<div class="modal-box" onclick="event.stopPropagation()">'+html+'</div>';
+  o.classList.add('show');
+}
+function closeModal(e){if(e&&e.target!==e.currentTarget)return;$('#modalOverlay').classList.remove('show')}
+
+/* ====== 折叠 ====== */
+function toggleCard(id){
+  const c=document.getElementById(id);
+  if(c)c.classList.toggle('collapsed');
+}
+
+/* ====== 练习首页 ====== */
+function practiceView(){
+  return `<div class="header"><span style="font-size:22px;line-height:1">🥚</span><span class="title">蛋妈计算宝典</span><span style="font-size:13px;font-weight:400;opacity:.95;background:rgba(255,255,255,.18);padding:2px 10px;border-radius:10px;white-space:nowrap">蛋妈加油！</span></div>
+  <div class="content">
+    <div class="card" id="card1">
+      <div class="card-h" onclick="toggleCard('card1')">基础计算练习<span class="arrow">&#9660;</span></div>
+      <div class="card-b">
+        <p class="card-sub">18种题型，自动出题、自动批改、错题记录</p>
+        <div style="margin-top:10px"><button class="btn btn-green btn-block" onclick="push('basicCalcTypes')">进入练习</button></div>
+        <div class="section-actions">
+          <button class="btn btn-outline btn-sm" onclick="push('history')">历史记录</button>
+          <button class="btn btn-outline btn-sm" onclick="push('errorBook')">错题本</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card collapsed" id="card2">
+      <div class="card-h" onclick="toggleCard('card2')">资料分析专项<span class="arrow">&#9660;</span></div>
+      <div class="card-b">
+        <p class="card-sub">增长量计算、比重、倍数等</p>
+        <div class="type-grid" style="margin-top:10px">
+          <div class="type-item" onclick="push('growthAmount')">增长量计算</div>
+          <div class="type-item" onclick="toast('实战题开发中...')">实战题</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card collapsed" id="card3">
+      <div class="card-h" onclick="toggleCard('card3')">思维能力训练<span class="arrow">&#9660;</span></div>
+      <div class="card-b">
+        <p class="group-title">找数能力</p>
+        <div class="game-grid">
+          <div class="game-item" onclick="push('game',{type:'schulte'})"><div class="gi-icon">&#128280;</div><div class="gi-name">舒尔特方格</div></div>
+          <div class="game-item" onclick="push('game',{type:'schulteScroll'})"><div class="gi-icon">&#128260;</div><div class="gi-name">滚动舒尔特</div></div>
+          <div class="game-item" onclick="push('game',{type:'textDiff'})"><div class="gi-icon">&#128269;</div><div class="gi-name">文字找茬</div></div>
+        </div>
+        <p class="group-title">推理能力</p>
+        <div class="game-grid">
+          <div class="game-item" onclick="push('game',{type:'sudoku'})"><div class="gi-icon">&#127937;</div><div class="gi-name">数独</div></div>
+          <div class="game-item" onclick="push('game',{type:'guessNum'})"><div class="gi-icon">&#127922;</div><div class="gi-name">猜数字</div></div>
+          <div class="game-item" onclick="push('game',{type:'tf24'})"><div class="gi-icon">&#931;</div><div class="gi-name">24点</div></div>
+        </div>
+        <p class="group-title">工作记忆</p>
+        <div class="game-grid">
+          <div class="game-item" onclick="push('game',{type:'flashMem'})"><div class="gi-icon">&#9889;</div><div class="gi-name">瞬间记忆</div></div>
+          <div class="game-item" onclick="push('game',{type:'lightning'})"><div class="gi-icon">&#9889;</div><div class="gi-name">闪电心算</div></div>
+        </div>
+        <p class="group-title">注意力</p>
+        <div class="game-grid">
+          <div class="game-item" onclick="push('game',{type:'stroop'})"><div class="gi-icon">&#127912;</div><div class="gi-name">斯特鲁普</div></div>
+          <div class="game-item" onclick="push('game',{type:'rotation'})"><div class="gi-icon">&#128260;</div><div class="gi-name">图形旋转</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card collapsed" id="card4">
+      <div class="card-h" onclick="toggleCard('card4')">数字推理训练<span class="arrow">&#9660;</span></div>
+      <div class="card-b">
+        <p class="card-sub">多选题型，随机抽题，自动批改</p>
+        <div id="nrTypesBox" style="margin-top:10px"><div class="checkbox-list">${NRTypes.map(t=>{const sel=DB.get('nrSelected',['基础数列']);return`<span class="cb-item ${sel.includes(t)?'checked':''}" onclick="toggleNRType('${t}',this)">${t}</span>`}).join('')}</div></div>
+        <div class="input-row" style="margin-top:10px">
+          <label>题量</label>
+          <input type="number" id="nrCount" value="10" min="1" max="50">
+        </div>
+        <button class="btn btn-green btn-block" onclick="startNR()">开始刷题</button>
+      </div>
+    </div>
+
+    <div class="card collapsed" id="card5">
+      <div class="card-h" onclick="toggleCard('card5')">设置与数据<span class="arrow">&#9660;</span></div>
+      <div class="card-b">
+        <div class="toggle-row">
+          <span>输入模式</span>
+          <div class="toggle ${inputMode==='touch'?'on':''}" onclick="toggleInputMode()"></div>
+        </div>
+        <div class="toggle-row" style="font-size:13px;color:var(--t2)">
+          <span>当前：${inputMode==='touch'?'触控笔模式（数字键盘）':'键盘模式（物理键盘）'}</span>
+        </div>
+        <div class="section-actions" style="margin-top:10px">
+          <button class="btn btn-outline btn-sm" onclick="exportData()">导出备份</button>
+          <button class="btn btn-outline btn-sm" onclick="importData()">导入备份</button>
+          <button class="btn btn-outline btn-sm" onclick="push('customList')">自定义题库</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleInputMode(){
+  inputMode=inputMode==='touch'?'keyboard':'touch';
+  DB.set('inputMode',inputMode);
+  render();
+}
+
+/* 初始化数字推理题型选择 */
+function initNRTypes(){
+  const types=['基础数列','多级数列','幂次数列','递推数列','因数分解','分数数列','机械划分','多重数列','图形数列','周期数列'];
+  const selected=DB.get('nrSelected',['基础数列']);
+  const box=document.getElementById('nrTypesBox');
+  if(!box)return;
+  box.innerHTML='<div class="checkbox-list">'+types.map(t=>`<span class="cb-item ${selected.includes(t)?'checked':''}" onclick="toggleNRType('${t}',this)">${t}</span>`).join('')+'</div>';
+}
+function toggleNRType(t,el){
+  let sel=DB.get('nrSelected',['基础数列']);
+  if(sel.includes(t))sel=sel.filter(x=>x!==t);else sel.push(t);
+  DB.set('nrSelected',sel);
+  el.classList.toggle('checked');
+}
+
+/* ====== 基础计算模块 ====== */
+const CalcTypes=[
+  '两位数加减','凑整百练习','三位数加法','三位数减法','三位数加减','多数相加','混合加减',
+  '两位数乘一位数','三位数乘一位数','两位数乘11','两位数乘15','两位数乘两位数',
+  '三位数除一位数','三位数除两位数','乘法估算','五位数除三位数','三位数除四位数','自定义'
+];
+
+const CalcGen={
+  '两位数加减'(){const a=rand(10,99),b=rand(10,99),op=Math.random()>0.5?'+':'-';return{q:`${a} ${op} ${b}`,a:op==='+'?a+b:a-b}},
+  '凑整百练习'(){const t=[100,200,300][rand(0,2)];const a=rand(11,t-11);return{q:`${a} + ${t-a}`,a:t}},
+  '三位数加法'(){const a=rand(100,999),b=rand(100,999);return{q:`${a} + ${b}`,a:a+b}},
+  '三位数减法'(){const a=rand(100,999),b=rand(100,a);return{q:`${a} - ${b}`,a:a-b}},
+  '三位数加减'(){const a=rand(100,999),b=rand(100,999),op=Math.random()>0.5?'+':'-';if(op==='-'&&b>a)return CalcGen['三位数加减']();return{q:`${a} ${op} ${b}`,a:op==='+'?a+b:a-b}},
+  '多数相加'(){const a=rand(10,99),b=rand(10,99),c=rand(10,99);return{q:`${a} + ${b} + ${c}`,a:a+b+c}},
+  '混合加减'(){const a=rand(20,99),b=rand(10,80),c=rand(10,80);const r=a+b-c;return{q:`${a} + ${b} - ${c}`,a:r}},
+  '两位数乘一位数'(){const a=rand(10,99),b=rand(2,9);return{q:`${a} \u00d7 ${b}`,a:a*b}},
+  '三位数乘一位数'(){const a=rand(100,999),b=rand(2,9);return{q:`${a} \u00d7 ${b}`,a:a*b}},
+  '两位数乘11'(){const a=rand(11,99);return{q:`${a} \u00d7 11`,a:a*11}},
+  '两位数乘15'(){const a=rand(10,99);return{q:`${a} \u00d7 15`,a:a*15}},
+  '两位数乘两位数'(){const a=rand(10,99),b=rand(10,99);return{q:`${a} \u00d7 ${b}`,a:a*b}},
+  '三位数除一位数'(){const d=rand(2,9),q=rand(12,111);return{q:`${d*q} \u00f7 ${d}`,a:q}},
+  '三位数除两位数'(){const d=rand(11,50),q=rand(2,9);return{q:`${d*q} \u00f7 ${d}`,a:q}},
+  '乘法估算'(){const a=rand(11,99),b=rand(11,99);const ra=Math.round(a/10)*10,rb=Math.round(b/10)*10;return{q:`${a} \u00d7 ${b} \u2248 ?`,a:ra*rb,hint:`估算 ${ra}\u00d7${rb}`}},
+  '五位数除三位数'(){const d=rand(100,999),q=rand(11,99);return{q:`${d*q} \u00f7 ${d}`,a:q}},
+  '三位数除四位数'(){const d=rand(100,999),q=rand(11,99);return{q:`${d*q} \u00f7 ${d}`,a:q}},
+  '自定义'(){const list=DB.get('customQ',[]);if(!list.length)return{q:'无自定义题',a:0,empty:true};const item=list[rand(0,list.length-1)];return{q:item.q,a:item.a,custom:true}}
+};
+
+function bctView(){
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">基础计算练习</span></div>
+  <div class="content">
+    <p class="group-title">选择题型</p>
+    <div class="type-grid">
+      ${CalcTypes.map((t,i)=>`<div class="type-item" onclick="selectCalcType(${i})">${t}</div>`).join('')}
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="card-b" style="padding:14px">
+        <div class="input-row">
+          <label>排序</label>
+          <select id="calcOrder">
+            <option value="seq">正序</option>
+            <option value="rev">倒序</option>
+            <option value="rand">乱序</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <label>题量</label>
+          <input type="number" id="calcCount" value="20" min="1" max="100">
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-green btn-block" onclick="startCalcPractice(-1)">开始练习</button>
+  </div>`;
+}
+
+let selectedCalcType=-1;
+function selectCalcType(i){
+  selectedCalcType=i;
+  document.querySelectorAll('.type-item').forEach((el,idx)=>el.classList.toggle('selected',idx===i));
+  if(CalcTypes[i]==='自定义'){
+    const list=DB.get('customQ',[]);
+    toast(`自定义题库：${list.length}题`,list.length?'':'error');
+  }
+}
+
+function startCalcPractice(typeIdx){
+  const type=typeIdx>=0?typeIdx:selectedCalcType;
+  if(type<0){toast('请选择题型','error');return}
+  const order=document.getElementById('calcOrder')?document.getElementById('calcOrder').value:'seq';
+  const count=parseInt(document.getElementById('calcCount')?document.getElementById('calcCount').value:20)||20;
+  let questions=[];
+  for(let i=0;i<count;i++){
+    const gen=CalcGen[CalcTypes[type]];
+    const q=gen();
+    if(q.empty){toast('请先添加自定义题目','error');return}
+    questions.push(q);
+  }
+  if(order==='rev')questions.reverse();
+  else if(order==='rand')questions=shuffle(questions);
+  practiceData={type:CalcTypes[type],questions,idx:0,answers:[],correct:0,started:true,startTime:Date.now(),errors:[]};bcInputVal='';
+  push('basicCalcPractice');
+}
+
+function bcpView(){
+  const{type,questions,idx,answers,correct}=practiceData;
+  if(idx>=questions.length)return bcrView();
+  const q=questions[idx];
+  const progress=((idx)/questions.length*100).toFixed(0);
+  return `<div class="header">
+    <span class="back" onclick="pop()">&#8249;</span>
+    <span class="title">${type}</span>
+    <span class="right">${idx+1}/${questions.length}</span>
+  </div>
+  <div class="content">
+    <div class="progress-bar"><div class="fill" style="width:${progress}%"></div></div>
+    <div class="stat-box">
+      <div class="stat"><div class="val" id="bcTimer">00:00</div><div class="lbl">用时</div></div>
+      <div class="stat"><div class="val">${correct}</div><div class="lbl">答对</div></div>
+      <div class="stat"><div class="val">${idx-correct}</div><div class="lbl">答错</div></div>
+    </div>
+    <div class="q-display">
+      <div class="formula" id="bcFormula">${q.q}</div>
+      ${q.hint?`<div class="hint">${q.hint}</div>`:''}
+      <div class="input-show" id="bcInput">${inputMode==='touch'?'':'<input type="text" inputmode="decimal" style="border:none;font-size:28px;text-align:center;width:100%;outline:none;color:var(--blue)" id="bcTextInput" placeholder="输入答案" onkeydown="if(event.key===\'Enter\')submitCalcAnswer()">'}</div>
+    </div>
+    ${inputMode==='touch'?calcKeypad():''}
+    <button class="btn btn-green btn-block" style="margin-top:8px" onclick="submitCalcAnswer()">确定</button>
+  </div>`;
+}
+
+function calcKeypad(){
+  return `<div class="keypad" id="calcKeypad">
+    <div class="kp-row">
+      <button class="key action" onclick="bcKey('clear')">清空</button>
+      <button class="key action" onclick="bcKey('back')">退格</button>
+      <button class="key action" onclick="bcKey('neg')">+/-</button>
+    </div>
+    <div class="kp-row">
+      <button class="key" onclick="bcKey('1')">1</button>
+      <button class="key" onclick="bcKey('2')">2</button>
+      <button class="key" onclick="bcKey('3')">3</button>
+    </div>
+    <div class="kp-row">
+      <button class="key" onclick="bcKey('4')">4</button>
+      <button class="key" onclick="bcKey('5')">5</button>
+      <button class="key" onclick="bcKey('6')">6</button>
+    </div>
+    <div class="kp-row">
+      <button class="key" onclick="bcKey('7')">7</button>
+      <button class="key" onclick="bcKey('8')">8</button>
+      <button class="key" onclick="bcKey('9')">9</button>
+    </div>
+    <div class="kp-row">
+      <button class="key" onclick="bcKey('.')">.</button>
+      <button class="key" onclick="bcKey('0')">0</button>
+      <button class="key confirm" onclick="submitCalcAnswer()">确定</button>
+    </div>
+  </div>`;
+}
+
+let bcInputVal='';
+function bcKey(k){
+  if(k==='clear'){bcInputVal=''}
+  else if(k==='back'){bcInputVal=bcInputVal.slice(0,-1)}
+  else if(k==='neg'){bcInputVal=bcInputVal.startsWith('-')?bcInputVal.slice(1):'-'+bcInputVal}
+  else{if(k==='.'&&bcInputVal.includes('.'))return;bcInputVal+=k}
+  const el=$('#bcInput');
+  if(el)el.textContent=bcInputVal;
+}
+
+function startPracticeTimer(){
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    const el=$('#bcTimer');
+    if(!el){clearInterval(timerInterval);return}
+    const s=Math.floor((Date.now()-practiceData.startTime)/1000);
+    el.textContent=`${pad2(Math.floor(s/60))}:${pad2(s%60)}`;
+  },500);
+}
+
+function submitCalcAnswer(){
+  let userAns;
+  if(inputMode==='touch'){
+    userAns=bcInputVal;
+  }else{
+    const inp=$('#bcTextInput');
+    userAns=inp?inp.value:'';
+  }
+  if(userAns===''||userAns==='-'){toast('请输入答案','error');return}
+  const q=practiceData.questions[practiceData.idx];
+  const userNum=parseFloat(userAns);
+  const correctNum=q.a;
+  const isCorrect=Math.abs(userNum-correctNum)<0.01;
+  practiceData.answers.push({q:q.q,user:userNum,correct:correctNum,isCorrect});
+  if(isCorrect){
+    practiceData.correct++;
+    toast('正确!','success');
+  }else{
+    practiceData.errors.push({q:q.q,user:userNum,correct:correctNum,type:practiceData.type,date:Date.now()});
+    saveError({q:q.q,user:userNum,correct:correctNum,type:practiceData.type,date:Date.now()});
+    toast(`错误! 正确答案: ${fmtNum(correctNum)}`,'error');
+  }
+  bcInputVal='';
+  practiceData.idx++;
+  setTimeout(()=>{
+    if(practiceData.idx>=practiceData.questions.length){
+      saveHistory();
+      push('basicCalcResult');
+    }else{
+      render();
+    }
+  },isCorrect?500:1200);
+}
+
+function saveError(err){
+  const errors=DB.get('errorBook',[]);
+  errors.unshift(err);
+  if(errors.length>500)errors=errors.slice(0,500);
+  DB.set('errorBook',errors);
+}
+
+function saveHistory(){
+  const hist=DB.get('history',[]);
+  hist.unshift({
+    type:practiceData.type,
+    total:practiceData.questions.length,
+    correct:practiceData.correct,
+    time:Math.floor((Date.now()-practiceData.startTime)/1000),
+    date:Date.now()
+  });
+  if(hist.length>100)hist=hist.slice(0,100);
+  DB.set('history',hist);
+}
+
+function bcrView(){
+  const{type,questions,answers,correct,startTime}=practiceData;
+  const time=Math.floor((Date.now()-startTime)/1000);
+  const rate=((correct/questions.length)*100).toFixed(1);
+  return `<div class="header"><span class="back" onclick="switchTab('practice')">&#8249;</span><span class="title">练习结果</span></div>
+  <div class="content">
+    <div class="stat-box">
+      <div class="stat"><div class="val">${correct}</div><div class="lbl">答对</div></div>
+      <div class="stat"><div class="val">${questions.length-correct}</div><div class="lbl">答错</div></div>
+      <div class="stat"><div class="val">${rate}%</div><div class="lbl">正确率</div></div>
+      <div class="stat"><div class="val">${pad2(Math.floor(time/60))}:${pad2(time%60)}</div><div class="lbl">用时</div></div>
+    </div>
+    <div class="card"><div class="card-b" style="padding:12px">
+      ${answers.map(a=>`<div class="result-item"><span class="ri-q">${a.q} = ${fmtNum(a.correct)}</span><span class="ri-a ${a.isCorrect?'correct':'wrong'}">${a.isCorrect?'正确':'你答:'+fmtNum(a.user)}</span></div>`).join('')}
+    </div></div>
+    <div class="section-actions">
+      <button class="btn btn-green" style="flex:1" onclick="startCalcPractice(CalcTypes.indexOf('${type}'))">再来一组</button>
+      <button class="btn btn-outline" onclick="exportCalcText()">导出题目</button>
+      <button class="btn btn-outline" onclick="switchTab('practice')">返回</button>
+    </div>
+  </div>`;
+}
+
+function exportCalcText(){
+  const{type,questions}=practiceData;
+  let text=`${type} 练习题目\n生成时间: ${new Date().toLocaleString()}\n题量: ${questions.length}\n\n`;
+  questions.forEach((q,i)=>{text+=`${i+1}. ${q.q} = ${fmtNum(q.a)}\n`});
+  text+=`\n--- 答案 ---\n`;
+  questions.forEach((q,i)=>{text+=`${i+1}. ${fmtNum(q.a)}\n`});
+  downloadText(text,`${type}_${Date.now()}.txt`);
+  toast('已导出题目文本','success');
+}
+
+function downloadText(text,filename){
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+/* ====== 资料分析-增长量计算 ====== */
+function daView(){
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">资料分析专项</span></div>
+  <div class="content">
+    <div class="type-grid">
+      <div class="type-item" onclick="push('growthAmount')">增长量计算</div>
+      <div class="type-item" onclick="toast('实战题开发中...')">实战题</div>
+    </div>
+  </div>`;
+}
+
+function genGrowthQuestion(){
+  const xianqi=rand(1000,99999);
+  const rateRaw=rand(-3000,5000)/100;
+  const rate=parseFloat(rateRaw.toFixed(1));
+  const standard=xianqi*rate/(100+rate);
+  return{
+    xianqi,rate,standard:parseFloat(standard.toFixed(1)),
+    text:`已知现期值为 ${xianqi.toLocaleString()}，增长率为 ${rate>0?rate+'%':rate+'%'}，求增长量。`
+  };
+}
+
+function growthView(){
+  if(!growthData.questions||growthData.idx>=10){
+    growthData={questions:[],idx:0,startTime:Date.now(),questionStartTime:Date.now(),results:[],errors:[]};
+    for(let i=0;i<10;i++)growthData.questions.push(genGrowthQuestion());
+  }
+  const q=growthData.questions[growthData.idx];
+  return `<div class="header">
+    <span class="back" onclick="pop()">&#8249;</span>
+    <span class="title">增长量计算</span>
+    <span class="right">${growthData.idx+1}/10</span>
+  </div>
+  <div class="content">
+    <div style="text-align:right;margin-bottom:8px"><span class="timer-display" id="growthTimer">00:00</span></div>
+    <div class="q-display">
+      <div style="font-size:15px;color:var(--text);margin-bottom:8px;line-height:1.8">${q.text}</div>
+      <div class="info-note">增长量 = 现期值 \u00d7 增长率 \u00f7 (1 + 增长率)<br>允许误差范围 \u00b13%，负数表示下降</div>
+      <div class="input-show" id="growthInput"></div>
+    </div>
+    <div class="keypad">
+      <div class="kp-row">
+        <button class="key action" onclick="growthKey('reset')">重开</button>
+        <button class="key action" onclick="growthKey('clear')">清空</button>
+        <button class="key action" onclick="growthKey('back')">退格</button>
+      </div>
+      <div class="kp-row">
+        <button class="key" onclick="growthKey('1')">1</button>
+        <button class="key" onclick="growthKey('2')">2</button>
+        <button class="key" onclick="growthKey('3')">3</button>
+      </div>
+      <div class="kp-row">
+        <button class="key" onclick="growthKey('4')">4</button>
+        <button class="key" onclick="growthKey('5')">5</button>
+        <button class="key" onclick="growthKey('6')">6</button>
+      </div>
+      <div class="kp-row">
+        <button class="key" onclick="growthKey('7')">7</button>
+        <button class="key" onclick="growthKey('8')">8</button>
+        <button class="key" onclick="growthKey('9')">9</button>
+      </div>
+      <div class="kp-row">
+        <button class="key" onclick="growthKey('.')">.</button>
+        <button class="key" onclick="growthKey('0')">0</button>
+        <button class="key" onclick="growthKey('neg')">-</button>
+      </div>
+      <div class="kp-row">
+        <button class="key confirm" style="font-size:18px" onclick="submitGrowthAnswer()">确定</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+let growthInputVal='';
+function growthKey(k){
+  if(k==='clear'){growthInputVal=''}
+  else if(k==='back'){growthInputVal=growthInputVal.slice(0,-1)}
+  else if(k==='reset'){growthInputVal='';growthData.questionStartTime=Date.now();toast('已重开本题')}
+  else if(k==='neg'){growthInputVal=growthInputVal.startsWith('-')?growthInputVal.slice(1):'-'+growthInputVal}
+  else{if(k==='.'&&growthInputVal.includes('.'))return;growthInputVal+=k}
+  const el=$('#growthInput');
+  if(el)el.textContent=growthInputVal;
+}
+
+function startGrowthTimer(){
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    const el=$('#growthTimer');
+    if(!el){clearInterval(timerInterval);return}
+    const s=Math.floor((Date.now()-growthData.startTime)/1000);
+    el.textContent=`${pad2(Math.floor(s/60))}:${pad2(s%60)}`;
+  },500);
+}
+
+function submitGrowthAnswer(){
+  if(growthInputVal===''||growthInputVal==='-'){toast('请输入答案','error');return}
+  const q=growthData.questions[growthData.idx];
+  const userNum=parseFloat(growthInputVal);
+  const std=q.standard;
+  const absStd=Math.abs(std);
+  const tolerance=absStd*0.03;
+  const isCorrect=absStd===0?(userNum===0):(Math.abs(userNum-absStd)<=tolerance);
+  const timeUsed=Math.floor((Date.now()-growthData.questionStartTime)/1000);
+  const pctDiff=absStd===0?0:((userNum-absStd)/absStd*100);
+  growthData.results.push({text:q.text,userAnswer:userNum,standardAnswer:std,isCorrect:isCorrect,timeUsed:timeUsed,pctDiff:parseFloat(pctDiff.toFixed(1))});
+  if(isCorrect){
+    toast('正确!','success');
+  }else{
+    growthData.errors.push({q:q.text,user:userNum,correct:std,type:'增长量计算',date:Date.now()});
+    saveError({q:q.text+' (答案:'+fmtNum(std)+')',user:userNum,correct:std,type:'增长量计算',date:Date.now()});
+    toast(`错误! 正确答案: ${fmtNum(std)}`,'error');
+  }
+  growthInputVal='';
+  growthData.idx++;
+  if(growthData.idx>=10){
+    growthData.totalTime=Math.floor((Date.now()-growthData.startTime)/1000);
+    const correctCount=growthData.results.filter(r=>r.isCorrect).length;
+    const hist=DB.get('history',[]);
+    hist.unshift({type:'增长量计算',total:10,correct:correctCount,time:growthData.totalTime,date:Date.now()});
+    DB.set('history',hist);
+    clearInterval(timerInterval);
+    setTimeout(()=>{stack.push({view:'growthResult',params:{}});render();window.scrollTo(0,0)},1200);
+  }else{
+    growthData.questionStartTime=Date.now();
+    setTimeout(render,isCorrect?500:1500);
+  }
+}
+
+function growthResultView(){
+  const results=growthData.results||[];
+  const totalTime=growthData.totalTime||0;
+  const correct=results.filter(r=>r.isCorrect).length;
+  const acc=results.length>0?Math.round(correct/results.length*100):0;
+  let rows=results.map((r,i)=>{
+    const diffStr=r.pctDiff>0?'+'+r.pctDiff+'%':r.pctDiff+'%';
+    const diffColor=Math.abs(r.pctDiff)<=3?'var(--primary)':'var(--danger)';
+    const m=Math.floor(r.timeUsed/60),s=r.timeUsed%60;
+    return `<div class="card" style="margin-bottom:6px">
+      <div class="card-h" style="padding:8px 14px;font-size:14px">
+        <span>第${i+1}题 ${r.isCorrect?'\u2705':'\u274c'}</span>
+        <span class="timer-display" style="font-size:13px">${pad2(m)}:${pad2(s)}</span>
+      </div>
+      <div class="card-b" style="padding:6px 14px 10px">
+        <div style="font-size:12px;color:var(--t2);margin-bottom:4px;line-height:1.5">${r.text}</div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">
+          <span>标准答案: <b>${fmtNum(r.standardAnswer)}</b></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">
+          <span>你的答案: <b style="color:${r.isCorrect?'var(--primary)':'var(--danger)'}">${fmtNum(r.userAnswer)}</b></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px">
+          <span>百分比差值: <b style="color:${diffColor}">${diffStr}</b></span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  const tm=Math.floor(totalTime/60),ts=totalTime%60;
+  return `<div class="header">
+    <span class="back" onclick="growthExit()">&#8249;</span>
+    <span class="title">蛋妈闯关结算</span>
+  </div>
+  <div class="content">
+    <div style="text-align:center;margin-bottom:12px;padding:16px;background:var(--card-green);border-radius:var(--r);border:1px solid var(--border)">
+      <div style="font-size:36px;font-weight:700;color:var(--pd)">${correct}<span style="font-size:18px;color:var(--t2)">/10</span></div>
+      <div style="font-size:14px;color:var(--t2);margin-top:4px">正确率 ${acc}%　总用时 ${pad2(tm)}:${pad2(ts)}</div>
+    </div>
+    ${rows}
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn btn-outline" style="flex:1" onclick="growthExit()">返回</button>
+      <button class="btn btn-green" style="flex:1" onclick="growthRestart()">再来一组</button>
+    </div>
+  </div>`;
+}
+
+function growthRestart(){
+  growthData={};
+  growthInputVal='';
+  if(stack.length>1&&stack[stack.length-1].view==='growthResult'){stack.pop()}
+  render();
+  window.scrollTo(0,0);
+}
+
+function growthExit(){
+  growthData={};
+  growthInputVal='';
+  while(stack.length>1){const v=stack[stack.length-1].view;if(v==='growthResult'||v==='growthAmount'){stack.pop()}else{break}}
+  render();
+  window.scrollTo(0,0);
+}
+
+/* ====== 数字推理模块 ====== */
+const NRTypes=['基础数列','多级数列','幂次数列','递推数列','因数分解','分数数列','机械划分','多重数列','图形数列','周期数列'];
+
+const NRGen={
+  '基础数列'(){
+    const t=rand(0,1);
+    if(t===0){const a=rand(1,20),d=rand(2,15);const s=[a,a+d,a+2*d,a+3*d,a+4*d];return{seq:s.slice(0,4).join(', ')+', ?',ans:s[4]}}
+    else{const a=rand(1,5),r=rand(2,4);const s=[a,a*r,a*r*r,a*r**3,a*r**4];return{seq:s.slice(0,4).join(', ')+', ?',ans:s[4]}}
+  },
+  '多级数列'(){
+    const a=rand(1,10),d1=rand(2,8),d2=rand(1,5);
+    const s=[a,a+d1,a+2*d1+d2,a+3*d1+3*d2,a+4*d1+6*d2,a+5*d1+10*d2];
+    return{seq:s.slice(0,5).join(', ')+', ?',ans:s[5]}
+  },
+  '幂次数列'(){
+    const t=rand(0,2);
+    if(t===0){const s=[1,4,9,16,25,36];return{seq:s.slice(0,5).join(', ')+', ?',ans:s[5]}}
+    else if(t===1){const s=[1,8,27,64,125];return{seq:s.slice(0,4).join(', ')+', ?',ans:s[4]}}
+    else{const s=[2,3,5,7,11,13];return{seq:s.slice(0,5).join(', ')+', ?',ans:s[5]}}
+  },
+  '递推数列'(){
+    const a=rand(1,5),b=rand(2,8);
+    const s=[a,b,a+b,a+2*b,2*a+3*b,3*a+5*b];
+    return{seq:s.slice(0,5).join(', ')+', ?',ans:s[5]}
+  },
+  '因数分解'(){
+    const n=rand(2,6);
+    const s=[n*(n+1),(n+1)*(n+2),(n+2)*(n+3),(n+3)*(n+4),(n+4)*(n+5)];
+    return{seq:s.slice(0,4).join(', ')+', ?',ans:s[4]}
+  },
+  '分数数列'(){
+    const a=rand(1,5);
+    const s=[a+'/2',a+'/3',a+'/4',a+'/5',a+'/6'];
+    return{seq:s.slice(0,4).join(', ')+', ?',ans:a+'/6',ansNum:a/6}
+  },
+  '机械划分'(){
+    const s=[12,23,34,45,56];
+    return{seq:s.slice(0,4).join(', ')+', ?',ans:s[4]}
+  },
+  '多重数列'(){
+    const a=rand(1,5),d=rand(2,6);
+    const s=[a,a+1,a+d,a+2,a+2*d,a+3];
+    return{seq:s.slice(0,5).join(', ')+', ?',ans:s[5]}
+  },
+  '图形数列'(){
+    const a=rand(2,8),b=rand(2,8),c=rand(2,8);
+    const ans=a+b+c;
+    return{seq:`三角形：顶=${a}，左=${b}，右=${c}，求中间数`,ans:ans}
+  },
+  '周期数列'(){
+    const p=shuffle([1,2,3,4]);
+    const s=[p[0],p[1],p[2],p[3],p[0],p[1],p[2]];
+    return{seq:s.slice(0,6).join(', ')+', ?',ans:s[6]}
+  }
+};
+
+function nrSelectView(){
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">数字推理训练</span></div>
+  <div class="content">
+    <p class="group-title">选择题型（可多选）</p>
+    <div class="checkbox-list" id="nrTypesBox2">
+      ${NRTypes.map(t=>{const sel=DB.get('nrSelected',['基础数列']);return`<span class="cb-item ${sel.includes(t)?'checked':''}" onclick="toggleNRType2('${t}',this)">${t}</span>`}).join('')}
+    </div>
+    <div class="input-row" style="margin-top:12px">
+      <label>题量</label>
+      <input type="number" id="nrCount2" value="10" min="1" max="50">
+    </div>
+    <button class="btn btn-green btn-block" onclick="startNR2()">开始刷题</button>
+  </div>`;
+}
+
+function toggleNRType2(t,el){
+  let sel=DB.get('nrSelected',['基础数列']);
+  if(sel.includes(t))sel=sel.filter(x=>x!==t);else sel.push(t);
+  DB.set('nrSelected',sel);
+  el.classList.toggle('checked');
+}
+
+function startNR(){
+  const sel=DB.get('nrSelected',[]);
+  if(!sel.length){toast('请至少选择一种题型','error');return}
+  const count=parseInt(document.getElementById('nrCount').value)||10;
+  startNRWith(sel,count);
+}
+function startNR2(){
+  const sel=DB.get('nrSelected',[]);
+  if(!sel.length){toast('请至少选择一种题型','error');return}
+  const count=parseInt(document.getElementById('nrCount2').value)||10;
+  startNRWith(sel,count);
+}
+function startNRWith(sel,count){
+  let questions=[];
+  for(let i=0;i<count;i++){
+    const type=sel[rand(0,sel.length-1)];
+    const q=NRGen[type]();
+    questions.push({...q,type});
+  }
+  nrData={questions,idx:0,answers:[],correct:0,startTime:Date.now(),errors:[]};
+  push('nrQuiz');
+}
+
+function nrQuizView(){
+  const{questions,idx,correct}=nrData;
+  if(idx>=questions.length)return nrResultView();
+  const q=questions[idx];
+  const progress=((idx)/questions.length*100).toFixed(0);
+  return `<div class="header">
+    <span class="back" onclick="pop()">&#8249;</span>
+    <span class="title">数字推理</span>
+    <span class="right">${idx+1}/${questions.length}</span>
+  </div>
+  <div class="content">
+    <div class="progress-bar"><div class="fill" style="width:${progress}%"></div></div>
+    <div class="stat-box">
+      <div class="stat"><div class="val" id="nrTimer">00:00</div><div class="lbl">用时</div></div>
+      <div class="stat"><div class="val">${correct}</div><div class="lbl">答对</div></div>
+      <div class="stat"><div class="val">${idx-correct}</div><div class="lbl">答错</div></div>
+    </div>
+    <div class="q-display">
+      <div class="hint" style="margin-bottom:8px">题型：${q.type}</div>
+      <div class="formula" style="font-size:24px">${q.seq}</div>
+      <div class="input-show" id="nrInput"></div>
+    </div>
+    ${calcKeypadHTML('nr')}
+    <button class="btn btn-green btn-block" style="margin-top:8px" onclick="submitNRAnswer()">确定</button>
+  </div>`;
+}
+
+function calcKeypadHTML(prefix,submitFn){
+  submitFn=submitFn||'submitNRAnswer';
+  return `<div class="keypad">
+    <div class="kp-row">
+      <button class="key action" onclick="${prefix}Key('clear')">清空</button>
+      <button class="key action" onclick="${prefix}Key('back')">退格</button>
+      <button class="key action" onclick="${prefix}Key('neg')">+/-</button>
+    </div>
+    <div class="kp-row"><button class="key" onclick="${prefix}Key('1')">1</button><button class="key" onclick="${prefix}Key('2')">2</button><button class="key" onclick="${prefix}Key('3')">3</button></div>
+    <div class="kp-row"><button class="key" onclick="${prefix}Key('4')">4</button><button class="key" onclick="${prefix}Key('5')">5</button><button class="key" onclick="${prefix}Key('6')">6</button></div>
+    <div class="kp-row"><button class="key" onclick="${prefix}Key('7')">7</button><button class="key" onclick="${prefix}Key('8')">8</button><button class="key" onclick="${prefix}Key('9')">9</button></div>
+    <div class="kp-row"><button class="key" onclick="${prefix}Key('/')">/</button><button class="key" onclick="${prefix}Key('0')">0</button><button class="key confirm" onclick="${submitFn}()">确定</button></div>
+  </div>`;
+}
+
+let nrInputVal='';
+function nrKey(k){
+  if(k==='clear'){nrInputVal=''}
+  else if(k==='back'){nrInputVal=nrInputVal.slice(0,-1)}
+  else if(k==='neg'){nrInputVal=nrInputVal.startsWith('-')?nrInputVal.slice(1):'-'+nrInputVal}
+  else{nrInputVal+=k}
+  const el=$('#nrInput');
+  if(el)el.textContent=nrInputVal;
+}
+
+function startNRTimer(){
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    const el=$('#nrTimer');
+    if(!el){clearInterval(timerInterval);return}
+    const s=Math.floor((Date.now()-nrData.startTime)/1000);
+    el.textContent=`${pad2(Math.floor(s/60))}:${pad2(s%60)}`;
+  },500);
+}
+
+function submitNRAnswer(){
+  if(nrInputVal===''){toast('请输入答案','error');return}
+  const q=nrData.questions[nrData.idx];
+  const userAns=nrInputVal.trim();
+  const stdAns=q.ans.toString();
+  const isCorrect=userAns===stdAns||parseFloat(userAns)===parseFloat(stdAns);
+  nrData.answers.push({q:q.seq,user:userAns,correct:stdAns,isCorrect,type:q.type});
+  if(isCorrect){
+    nrData.correct++;
+    toast('正确!','success');
+  }else{
+    nrData.errors.push({q:q.seq,user:userAns,correct:stdAns,type:q.type,date:Date.now()});
+    saveError({q:q.seq+' (答案:'+stdAns+')',user:userAns,correct:stdAns,type:'数字推理-'+q.type,date:Date.now()});
+    toast(`错误! 正确答案: ${stdAns}`,'error');
+  }
+  nrInputVal='';
+  nrData.idx++;
+  setTimeout(()=>{
+    if(nrData.idx>=nrData.questions.length){
+      const t=Math.floor((Date.now()-nrData.startTime)/1000);
+      const hist=DB.get('history',[]);
+      hist.unshift({type:'数字推理',total:nrData.questions.length,correct:nrData.correct,time:t,date:Date.now()});
+      DB.set('history',hist);
+      push('nrResult');
+    }else{
+      render();
+      startNRTimer();
+    }
+  },isCorrect?500:1200);
+}
+
+function nrResultView(){
+  const{questions,answers,correct,startTime}=nrData;
+  const time=Math.floor((Date.now()-startTime)/1000);
+  const rate=((correct/questions.length)*100).toFixed(1);
+  return `<div class="header"><span class="back" onclick="switchTab('practice')">&#8249;</span><span class="title">推理结果</span></div>
+  <div class="content">
+    <div class="stat-box">
+      <div class="stat"><div class="val">${correct}</div><div class="lbl">答对</div></div>
+      <div class="stat"><div class="val">${questions.length-correct}</div><div class="lbl">答错</div></div>
+      <div class="stat"><div class="val">${rate}%</div><div class="lbl">正确率</div></div>
+      <div class="stat"><div class="val">${pad2(Math.floor(time/60))}:${pad2(time%60)}</div><div class="lbl">用时</div></div>
+    </div>
+    <div class="card"><div class="card-b" style="padding:12px">
+      ${answers.map(a=>`<div class="result-item"><span class="ri-q">${a.q} = ${a.correct}</span><span class="ri-a ${a.isCorrect?'correct':'wrong'}">${a.isCorrect?'正确':'你答:'+a.user}</span></div>`).join('')}
+    </div></div>
+    <button class="btn btn-green btn-block" onclick="switchTab('practice')">返回</button>
+  </div>`;
+}
+
+/* ====== 历史记录 ====== */
+function historyView(){
+  const hist=DB.get('history',[]);
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">历史记录</span></div>
+  <div class="content">
+    ${hist.length?hist.map(h=>`<div class="history-item"><span class="hi-type">${h.type}</span><div class="hi-stat">${h.correct}/${h.total} 正确率${((h.correct/h.total)*100).toFixed(0)}% | ${pad2(Math.floor(h.time/60))}:${pad2(h.time%60)} | ${new Date(h.date).toLocaleString()}</div></div>`).join(''):'<div class="empty-state">暂无历史记录</div>'}
+  </div>`;
+}
+
+/* ====== 错题本 ====== */
+function errorBookView(){
+  const errors=DB.get('errorBook',[]);
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">错题本 (${errors.length})</span>
+  ${errors.length?'<span class="right" onclick="clearErrors()" style="cursor:pointer;font-size:13px">清空</span>':''}</div>
+  <div class="content">
+    ${errors.length?errors.map((e,i)=>`<div class="result-item"><span class="ri-q">${i+1}. ${e.q}<br><small style="color:var(--t3)">${e.type} | ${new Date(e.date).toLocaleString()}</small></span><span class="ri-a wrong">你:${e.user}<br>对:${fmtNum(e.correct)}</span></div>`).join(''):'<div class="empty-state">暂无错题</div>'}
+  </div>`;
+}
+function clearErrors(){
+  if(confirm('确定清空所有错题？')){DB.set('errorBook',[]);render()}
+}
+
+/* ====== 自定义题库 ====== */
+function customListView(){
+  const list=DB.get('customQ',[]);
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">自定义题库 (${list.length})</span></div>
+  <div class="content">
+    ${list.length?list.map((q,i)=>`<div class="result-item"><span class="ri-q">${q.q} = ${q.a}</span><span class="ri-a" style="cursor:pointer;color:var(--danger)" onclick="delCustom(${i})">删除</span></div>`).join(''):'<div class="empty-state">暂无自定义题目，点击右下角+添加</div>'}
+  </div>`;
+}
+function delCustom(i){
+  const list=DB.get('customQ',[]);
+  list.splice(i,1);
+  DB.set('customQ',list);
+  render();
+}
+
+/* ====== 自定义录入弹窗 ====== */
+function openCustomModal(){
+  openModal(`<h3>添加自定义题目</h3>
+    <div class="form-group"><label>题目（如：123 + 456）</label><input type="text" id="customQ" placeholder="输入题目"></div>
+    <div class="form-group"><label>答案</label><input type="text" id="customA" placeholder="输入答案"></div>
+    <div class="btn-row"><button class="btn btn-gray" style="flex:1" onclick="closeModal()">取消</button><button class="btn btn-green" style="flex:1" onclick="saveCustomQ()">保存</button></div>
+  `);
+}
+function saveCustomQ(){
+  const q=document.getElementById('customQ').value.trim();
+  const a=document.getElementById('customA').value.trim();
+  if(!q||!a){toast('请填写题目和答案','error');return}
+  const list=DB.get('customQ',[]);
+  list.push({q,a});
+  DB.set('customQ',list);
+  closeModal();
+  toast('已添加','success');
+  if(cur().view==='customList')render();
+}
+
+/* ====== 数据导入导出 ====== */
+function exportData(){
+  const data=DB.export();
+  downloadText(data,`蛋妈计算宝典_备份_${new Date().toISOString().slice(0,10)}.json`);
+  toast('已导出备份','success');
+}
+function importData(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='.json';
+  input.onchange=e=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{DB.import(ev.target.result);toast('导入成功','success');render()}catch(err){toast('导入失败：文件格式错误','error')}
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+/* ====== 设置 ====== */
+function settingsView(){
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">设置</span></div>
+  <div class="content">
+    <div class="card"><div class="card-b" style="padding:0">
+      <div class="toggle-row"><span>输入模式</span><div class="toggle ${inputMode==='touch'?'on':''}" onclick="toggleInputMode()"></div></div>
+      <div class="toggle-row" style="font-size:13px;color:var(--t2)"><span>当前：${inputMode==='touch'?'触控笔模式（数字键盘）':'键盘模式（物理键盘）'}</span></div>
+    </div></div>
+    <div class="card"><div class="card-b" style="padding:14px">
+      <div class="section-actions">
+        <button class="btn btn-outline btn-sm" onclick="exportData()">导出备份</button>
+        <button class="btn btn-outline btn-sm" onclick="importData()">导入备份</button>
+        <button class="btn btn-outline btn-sm" onclick="push('customList')">自定义题库</button>
+      </div>
+    </div></div>
+    <div class="card"><div class="card-b" style="padding:14px">
+      <button class="btn btn-gray btn-block" onclick="clearAllData()" style="color:var(--danger)">清空所有数据</button>
+    </div></div>
+  </div>`;
+}
+function clearAllData(){
+  if(confirm('确定清空所有数据？此操作不可恢复！')){
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k&&k.startsWith(DB.p))localStorage.removeItem(k);
+    }
+    toast('已清空','success');
+    switchTab('practice');
+  }
+}
+
+/* ====== 专注页面 ====== */
+let focusState={mode:'work',time:25*60,remaining:25*60,running:false,sessions:0};
+function focusView(){
+  const m=focusState.mode==='work'?'work':'break';
+  const mins=Math.floor(focusState.remaining/60);
+  const secs=focusState.remaining%60;
+  return `<div class="header"><span class="title">专注</span></div>
+  <div class="content">
+    <div class="pomodoro-mode">
+      <span class="${focusState.mode==='work'?'active':''}" onclick="setFocusMode('work')">工作 25分钟</span>
+      <span class="${focusState.mode==='break'?'active':''}" onclick="setFocusMode('break')">休息 5分钟</span>
+    </div>
+    <div class="focus-timer" id="focusTimer">${pad2(mins)}:${pad2(secs)}</div>
+    <div class="focus-controls">
+      <button class="btn btn-green" onclick="toggleFocus()">${focusState.running?'暂停':'开始'}</button>
+      <button class="btn btn-gray" onclick="resetFocus()">重置</button>
+    </div>
+    <div class="focus-session">已完成 ${focusState.sessions} 个番茄钟</div>
+    <div class="card" style="margin-top:20px"><div class="card-b" style="padding:14px">
+      <p style="font-size:14px;color:var(--t2);line-height:1.8">
+        专注模式使用番茄工作法：25分钟专注学习 + 5分钟休息。<br>
+        开始后请放下手机，专心做题。计时结束会有提示。
+      </p>
+    </div></div>
+  </div>`;
+}
+function initFocus(){
+  if(focusState.running)startFocusTimer();
+}
+function setFocusMode(mode){
+  focusState.mode=mode;
+  focusState.time=mode==='work'?25*60:5*60;
+  focusState.remaining=focusState.time;
+  focusState.running=false;
+  clearInterval(timerInterval);
+  render();
+}
+function toggleFocus(){
+  focusState.running=!focusState.running;
+  if(focusState.running)startFocusTimer();
+  else clearInterval(timerInterval);
+  render();
+}
+function resetFocus(){
+  focusState.running=false;
+  focusState.remaining=focusState.time;
+  clearInterval(timerInterval);
+  render();
+}
+function startFocusTimer(){
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    focusState.remaining--;
+    if(focusState.remaining<=0){
+      clearInterval(timerInterval);
+      focusState.running=false;
+      if(focusState.mode==='work'){
+        focusState.sessions++;
+        toast('工作结束！休息一下吧','success');
+        focusState.mode='break';
+        focusState.time=5*60;
+        focusState.remaining=5*60;
+      }else{
+        toast('休息结束！继续加油','success');
+        focusState.mode='work';
+        focusState.time=25*60;
+        focusState.remaining=25*60;
+      }
+      render();
+      return;
+    }
+    const el=$('#focusTimer');
+    if(el){
+      const m=Math.floor(focusState.remaining/60);
+      const s=focusState.remaining%60;
+      el.textContent=`${pad2(m)}:${pad2(s)}`;
+    }
+  },1000);
+}
+
+/* ====== 思维训练菜单 ====== */
+function thinkingView(){
+  return practiceView();
+}
+
+/* ====== 游戏入口 ====== */
+function gameView(params){
+  const games={
+    schulte:gameSchulte,schulteScroll:gameSchulteScroll,textDiff:gameTextDiff,
+    sudoku:gameSudoku,guessNum:gameGuessNum,tf24:gameTF24,
+    flashMem:gameFlashMem,lightning:gameLightning,stroop:gameStroop,rotation:gameRotation
+  };
+  const fn=games[params.type]||function(){return'<div class="empty-state">游戏开发中...</div>'};
+  return fn();
+}
+
+/* ====== 游戏实现 ====== */
+let gameTimeouts=[];
+function clearGameTimeouts(){gameTimeouts.forEach(t=>clearTimeout(t));gameTimeouts=[]}
+function setGTO(fn,delay){const id=setTimeout(fn,delay);gameTimeouts.push(id);return id}
+
+function startGame(type){
+  clearGameTimeouts();
+  if(type==='flashMem')setGTO(startFlashShow,800);
+  if(type==='stroop')setGTO(nextStroop,500);
+  if(type==='rotation')setGTO(nextRotation,300);
+}
+
+/* 1. 舒尔特方格 */
+function gameSchulte(){
+  const nums=shuffle(Array.from({length:25},(_,i)=>i+1));
+  gameData={nums,next:1,startTime:0,errors:0};
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">舒尔特方格</span><span class="right">按序点击</span></div>
+  <div class="content">
+    <div class="stat-box"><div class="stat"><div class="val" id="sTimer">0.00</div><div class="lbl">用时(秒)</div></div><div class="stat"><div class="val" id="sNext">1</div><div class="lbl">下一个</div></div><div class="stat"><div class="val" id="sErr">0</div><div class="lbl">错误次数</div></div></div>
+    <div class="schulte-grid" style="grid-template-columns:repeat(5,1fr)">
+      ${nums.map(n=>`<div class="schulte-cell" onclick="schulteTap(${n},this)">${n}</div>`).join('')}
+    </div>
+  </div>`;
+}
+function schulteTap(n,el){
+  if(!gameData.startTime){gameData.startTime=Date.now();clearInterval(timerInterval);timerInterval=setInterval(()=>{const e=$('#sTimer');if(e)e.textContent=((Date.now()-gameData.startTime)/1000).toFixed(2)},100)}
+  if(n===gameData.next){
+    el.classList.add('done');gameData.next++;
+    const ne=$('#sNext');if(ne)ne.textContent=gameData.next<=gameData.nums.length?gameData.next:'完成';
+    if(gameData.next>gameData.nums.length){
+      clearInterval(timerInterval);
+      const t=((Date.now()-gameData.startTime)/1000).toFixed(2);
+      toast(`完成! 用时${t}秒，错误${gameData.errors}次`,'success');
+      const h=DB.get('history',[]);h.unshift({type:'舒尔特方格',total:1,correct:1,time:Math.floor(parseFloat(t)*100),date:Date.now()});DB.set('history',h);
+      setGTO(()=>{gameData={};pop()},2500);
+    }
+  }else{el.classList.add('wrong');gameData.errors++;const ee=$('#sErr');if(ee)ee.textContent=gameData.errors;setTimeout(()=>el.classList.remove('wrong'),300)}
+}
+
+/* 2. 滚动舒尔特 (6x6) */
+function gameSchulteScroll(){
+  const nums=shuffle(Array.from({length:36},(_,i)=>i+1));
+  gameData={nums,next:1,startTime:0,errors:0};
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">滚动舒尔特 6x6</span><span class="right">按序点击</span></div>
+  <div class="content">
+    <div class="stat-box"><div class="stat"><div class="val" id="sTimer">0.00</div><div class="lbl">用时(秒)</div></div><div class="stat"><div class="val" id="sNext">1</div><div class="lbl">下一个</div></div><div class="stat"><div class="val" id="sErr">0</div><div class="lbl">错误</div></div></div>
+    <div class="schulte-grid" style="grid-template-columns:repeat(6,1fr);max-width:380px">
+      ${nums.map(n=>`<div class="schulte-cell" style="font-size:18px" onclick="schulteTap(${n},this)">${n}</div>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* 3. 文字找茬 */
+const diffPool='春风又绿江南岸明月何时照我还两岸猿声啼不住轻舟已过万重山';
+function gameTextDiff(){
+  const len=rand(16,24);
+  const orig=[];for(let i=0;i<len;i++)orig.push(diffPool[rand(0,diffPool.length-1)]);
+  const mod=[...orig];const diffPos=[];const dc=rand(3,5);
+  for(let i=0;i<dc;i++){const pos=rand(0,len-1);if(!diffPos.includes(pos)){diffPos.push(pos);let nc;do{nc=diffPool[rand(0,diffPool.length-1)]}while(nc===orig[pos]);mod[pos]=nc}}
+  gameData={orig,mod,diffPos:diffPos.sort((a,b)=>a-b),found:[]};
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">文字找茬</span><span class="right" id="tdStatus">找${diffPos.length}处不同</span></div>
+  <div class="content">
+    <p style="font-size:13px;color:var(--t2);margin-bottom:8px">原文：</p>
+    <div class="scroll-text">${orig.join('')}</div>
+    <p style="font-size:13px;color:var(--t2);margin:12px 0 8px">找出不同（点击下方文字）：</p>
+    <div class="scroll-text" id="tdMod">${mod.map((c,i)=>`<span class="diff-char" onclick="tdTap(${i},this)">${c}</span>`).join('')}</div>
+    <div class="stat-box" style="margin-top:12px"><div class="stat"><div class="val" id="tdFound">0</div><div class="lbl">已找到</div></div><div class="stat"><div class="val">${diffPos.length}</div><div class="lbl">总不同</div></div></div>
+  </div>`;
+}
+function tdTap(i,el){
+  if(gameData.found.includes(i))return;
+  if(gameData.diffPos.includes(i)){
+    el.classList.add('found');gameData.found.push(i);
+    $('#tdFound').textContent=gameData.found.length;
+    if(gameData.found.length===gameData.diffPos.length){toast('全部找到!','success');setGTO(()=>{gameData={};pop()},1500)}
+  }else{el.style.background='#f44336';el.style.color='#fff';setTimeout(()=>{el.style.background='';el.style.color=''},300);toast('这里没有不同','error')}
+}
+
+/* 4. 数独 4x4 */
+function genSudoku4(){
+  const base=[[1,2,3,4],[3,4,1,2],[2,1,4,3],[4,3,2,1]];
+  const perm=shuffle([1,2,3,4]);
+  const grid=base.map(r=>r.map(v=>perm[v-1]));
+  const solution=grid.map(r=>[...r]);
+  const puzzle=grid.map(r=>r.map(v=>Math.random()<0.45?0:v));
+  return{puzzle,solution};
+}
+function gameSudoku(){
+  const{puzzle,solution}=genSudoku4();
+  gameData={puzzle,solution,selected:null};
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">数独 4x4</span></div>
+  <div class="content">
+    <p class="card-sub" style="margin-bottom:8px">每行、每列、每个2x2宫格内1-4不重复</p>
+    <div class="sudoku-grid" id="sudokuGrid">
+      ${puzzle.map((row,i)=>row.map((v,j)=>`<div class="sudoku-cell ${v?'given':''}" ${v?'':`onclick="sudokuSel(${i},${j})"`} id="sc${i}${j}">${v||''}</div>`).join('')).join('')}
+    </div>
+    <div class="kp-row" style="max-width:300px;margin:16px auto">
+      ${[1,2,3,4].map(n=>`<button class="key" onclick="sudokuInput(${n})">${n}</button>`).join('')}
+    </div>
+    <button class="btn btn-outline btn-block" onclick="sudokuCheck()">检查答案</button>
+  </div>`;
+}
+function sudokuSel(i,j){
+  if(gameData.puzzle[i][j]!==0)return;
+  document.querySelectorAll('.sudoku-cell.selected').forEach(c=>c.classList.remove('selected'));
+  gameData.selected=[i,j];
+  const el=$('#sc'+i+j);if(el)el.classList.add('selected');
+}
+function sudokuInput(n){
+  if(!gameData.selected){toast('请先选择一个空格','error');return}
+  const[i,j]=gameData.selected;
+  gameData.puzzle[i][j]=n;
+  const el=$('#sc'+i+j);if(el){el.textContent=n;el.classList.add('empty')}
+}
+function sudokuCheck(){
+  const p=gameData.puzzle;
+  for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(p[i][j]===0){toast('还有空格未填','error');return}
+  const s=gameData.solution;let ok=true;
+  for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(p[i][j]!==s[i][j])ok=false;
+  if(ok){toast('完全正确!','success');setGTO(()=>{gameData={};pop()},1500)}
+  else{toast('有错误，请检查','error')}
+}
+
+/* 5. 猜数字 */
+function gameGuessNum(){
+  gameData={target:rand(1,100),attempts:0,done:false};
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">猜数字</span></div>
+  <div class="content">
+    <div class="q-display">
+      <div class="hint">猜一个 1-100 之间的数字</div>
+      <div class="guess-feedback" id="guessFb">开始猜吧！</div>
+      <div class="input-show" id="guessInput"></div>
+    </div>
+    ${calcKeypadHTML('guess','submitGuess')}
+    <div class="stat-box" style="margin-top:12px"><div class="stat"><div class="val" id="guessAtt">0</div><div class="lbl">尝试次数</div></div></div>
+  </div>`;
+}
+let guessInputVal='';
+function guessKey(k){
+  if(k==='clear'){guessInputVal=''}else if(k==='back'){guessInputVal=guessInputVal.slice(0,-1)}else if(k==='neg'){}else{guessInputVal+=k}
+  const el=$('#guessInput');if(el)el.textContent=guessInputVal;
+}
+function submitGuess(){
+  if(gameData.done)return;
+  if(!guessInputVal){toast('请输入数字','error');return}
+  const num=parseInt(guessInputVal);
+  if(isNaN(num)||num<1||num>100){toast('请输入1-100的数字','error');return}
+  gameData.attempts++;$('#guessAtt').textContent=gameData.attempts;
+  const fb=$('#guessFb');
+  if(num===gameData.target){fb.className='guess-feedback correct';fb.textContent=`正确! 用了${gameData.attempts}次`;gameData.done=true;toast('猜对了!','success');setGTO(()=>{gameData={};pop()},2000)}
+  else if(num<gameData.target){fb.className='guess-feedback low';fb.textContent='太小了，往大猜'}
+  else{fb.className='guess-feedback high';fb.textContent='太大了，往小猜'}
+  guessInputVal='';const inp=$('#guessInput');if(inp)inp.textContent='';
+}
+
+/* 6. 24点 */
+function gameTF24(){
+  const nums=[];for(let i=0;i<4;i++)nums.push(rand(1,13));
+  gameData={nums};
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">24点</span></div>
+  <div class="content">
+    <div class="q-display">
+      <div class="hint">用 + - \u00d7 \u00f7 和括号使结果等于24</div>
+      <div class="tf24-nums">${nums.map(n=>`<div class="tf24-num">${n}</div>`).join('')}</div>
+      <input type="text" class="tf24-input" id="tf24Expr" placeholder="如：(3+5)*(4-1)" autocomplete="off">
+    </div>
+    <button class="btn btn-green btn-block" onclick="submitTF24()">提交</button>
+    <button class="btn btn-outline btn-block" style="margin-top:8px" onclick="newTF24()">换一组</button>
+    <div class="info-note">提示：每个数字必须使用一次，可用括号。\u00d7和\u00f7也可用*和/。</div>
+  </div>`;
+}
+function evalTF24(expr){
+  try{const c=expr.replace(/\s/g,'').replace(/\u00d7/g,'*').replace(/\u00f7/g,'/');if(!/^[\d+\-*/().]+$/.test(c))return null;return Function('"use strict";return ('+c+')')()}catch(e){return null}
+}
+function submitTF24(){
+  const expr=$('#tf24Expr')?$('#tf24Expr').value:'';
+  if(!expr){toast('请输入表达式','error');return}
+  const r=evalTF24(expr);
+  if(r===null){toast('表达式格式错误','error');return}
+  if(Math.abs(r-24)<0.001){toast('正确! 等于24','success');setGTO(newTF24,1500)}
+  else{toast(`结果为${fmtNum(r)}，不等于24`,'error')}
+}
+function newTF24(){const nums=[];for(let i=0;i<4;i++)nums.push(rand(1,13));gameData={nums};render()}
+
+/* 7. 瞬间记忆 */
+function gameFlashMem(){
+  gameData={level:4,showing:true,score:0,nums:[],inputIdx:0};
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">瞬间记忆</span></div>
+  <div class="content">
+    <div class="stat-box"><div class="stat"><div class="val" id="fmLevel">1</div><div class="lbl">关卡</div></div><div class="stat"><div class="val" id="fmScore">0</div><div class="lbl">得分</div></div></div>
+    <div class="flash-display" id="fmDisplay">准备开始...</div>
+    <div class="mem-grid" id="fmGrid" style="grid-template-columns:repeat(4,1fr)"></div>
+  </div>`;
+}
+function startFlashShow(){
+  const count=gameData.level;gameData.nums=[];
+  for(let i=0;i<count;i++)gameData.nums.push(rand(0,9));
+  const disp=$('#fmDisplay');const grid=$('#fmGrid');
+  if(disp)disp.textContent='记住这些数字！';
+  if(grid)grid.innerHTML=gameData.nums.map(n=>`<div class="mem-cell">${n}</div>`).join('');
+  gameData.showing=true;
+  setGTO(()=>{
+    if(disp)disp.textContent='按顺序点击你记住的数字';
+    if(grid)grid.innerHTML=gameData.nums.map((n,i)=>`<div class="mem-cell hidden" onclick="fmInput(${i},this)">${n}</div>`).join('');
+    gameData.showing=false;gameData.inputIdx=0;
+  },2000+count*300);
+}
+function fmInput(i,el){
+  if(gameData.showing)return;
+  if(gameData.inputIdx>=gameData.nums.length)return;
+  el.classList.remove('hidden');
+  if(i===gameData.inputIdx){
+    gameData.inputIdx++;
+    if(gameData.inputIdx>=gameData.nums.length){
+      gameData.score+=gameData.level;$('#fmScore').textContent=gameData.score;
+      toast('正确!','success');gameData.level++;$('#fmLevel').textContent=gameData.level-3;
+      setGTO(startFlashShow,1500);
+    }
+  }else{
+    toast(`错误! 正确顺序: ${gameData.nums.join(' ')}`,'error');
+    const h=DB.get('history',[]);h.unshift({type:'瞬间记忆',total:1,correct:1,time:0,date:Date.now(),score:gameData.score});DB.set('history',h);
+    setGTO(()=>{gameData={};pop()},2000);
+  }
+}
+
+/* 8. 闪电心算 */
+function gameLightning(){
+  gameData={score:0,timeLeft:60,running:false,current:0};
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">闪电心算</span></div>
+  <div class="content">
+    <div class="stat-box"><div class="stat"><div class="val" id="ltScore">0</div><div class="lbl">得分</div></div><div class="stat"><div class="val" id="ltTime">60</div><div class="lbl">剩余秒</div></div></div>
+    <div class="lightning-q" id="ltQ">点击开始</div>
+    <div class="input-show" id="ltInput" style="text-align:center;font-size:28px;border-bottom:2px solid var(--border);padding:8px;min-height:40px"></div>
+    ${calcKeypadHTML('lt','submitLightning')}
+    <button class="btn btn-green btn-block" style="margin-top:8px" onclick="startLightningGame()" id="ltStart">开始</button>
+  </div>`;
+}
+let ltInputVal='';
+function ltKey(k){
+  if(k==='clear'){ltInputVal=''}else if(k==='back'){ltInputVal=ltInputVal.slice(0,-1)}else if(k==='neg'){ltInputVal=ltInputVal.startsWith('-')?ltInputVal.slice(1):'-'+ltInputVal}else{ltInputVal+=k}
+  const el=$('#ltInput');if(el)el.textContent=ltInputVal;
+}
+function startLightningGame(){
+  if(gameData.running)return;
+  gameData.running=true;gameData.timeLeft=60;gameData.score=0;
+  $('#ltStart').style.display='none';$('#ltScore').textContent='0';$('#ltTime').textContent='60';
+  nextLightningQ();
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    gameData.timeLeft--;const el=$('#ltTime');if(el)el.textContent=gameData.timeLeft;
+    if(gameData.timeLeft<=0){
+      clearInterval(timerInterval);gameData.running=false;
+      toast(`时间到! 得分: ${gameData.score}`,'success');
+      const h=DB.get('history',[]);h.unshift({type:'闪电心算',total:1,correct:1,time:60,date:Date.now(),score:gameData.score});DB.set('history',h);
+      setGTO(()=>{gameData={};pop()},2500);
+    }
+  },1000);
+}
+function nextLightningQ(){
+  const a=rand(10,99),b=rand(10,99);const op=['+','-','\u00d7'][rand(0,2)];
+  let ans;
+  if(op==='+')ans=a+b;
+  else if(op==='-'){if(b>a){const t=a;a=b;b=t}ans=a-b}
+  else ans=a*b;
+  gameData.current=ans;ltInputVal='';
+  const q=$('#ltQ');if(q)q.textContent=`${a} ${op} ${b} = ?`;
+  const inp=$('#ltInput');if(inp)inp.textContent='';
+}
+function submitLightning(){
+  if(!gameData.running)return;
+  if(!ltInputVal)return;
+  const u=parseFloat(ltInputVal);
+  if(u===gameData.current){
+    gameData.score++;$('#ltScore').textContent=gameData.score;ltInputVal='';nextLightningQ();
+  }else{toast('错误!','error');ltInputVal='';const inp=$('#ltInput');if(inp)inp.textContent=''}
+}
+
+/* 9. 斯特鲁普测试 */
+const stroopColors=[{name:'红',color:'#f44336'},{name:'绿',color:'#4caf50'},{name:'蓝',color:'#2196f3'},{name:'黄',color:'#ff9800'}];
+function gameStroop(){
+  gameData={score:0,count:0,timeLeft:30,running:false,currentColor:''};
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">斯特鲁普测试</span></div>
+  <div class="content">
+    <div class="stat-box"><div class="stat"><div class="val" id="stScore">0</div><div class="lbl">正确数</div></div><div class="stat"><div class="val" id="stTime">30</div><div class="lbl">剩余秒</div></div></div>
+    <p style="font-size:13px;color:var(--t2);text-align:center;margin-bottom:8px">点击文字的<strong>颜色</strong>，不是字面意思</p>
+    <div class="stroop-word" id="stWord">准备</div>
+    <div class="stroop-options" id="stOptions"></div>
+  </div>`;
+}
+function nextStroop(){
+  if(!gameData.running){
+    gameData.running=true;clearInterval(timerInterval);
+    timerInterval=setInterval(()=>{
+      gameData.timeLeft--;const el=$('#stTime');if(el)el.textContent=gameData.timeLeft;
+      if(gameData.timeLeft<=0){clearInterval(timerInterval);gameData.running=false;toast(`时间到! 正确${gameData.score}题`,'success');setGTO(()=>{gameData={};pop()},2500)}
+    },1000);
+  }
+  const wIdx=rand(0,3),cIdx=rand(0,3);
+  gameData.currentColor=stroopColors[cIdx].name;
+  const wEl=$('#stWord');if(wEl){wEl.textContent=stroopColors[wIdx].name;wEl.style.color=stroopColors[cIdx].color}
+  const oEl=$('#stOptions');
+  if(oEl){const sh=shuffle(stroopColors);oEl.innerHTML=sh.map(c=>`<button class="stroop-btn" style="background:${c.color}" onclick="stroopAnswer('${c.name}')">${c.name}</button>`).join('')}
+}
+function stroopAnswer(name){
+  if(!gameData.running)return;
+  gameData.count++;
+  if(name===gameData.currentColor){gameData.score++;$('#stScore').textContent=gameData.score}
+  nextStroop();
+}
+
+/* 10. 图形旋转 */
+const rotShapes=['\u25B2','\u25CF','\u25A0','\u25C6','\u2605','\u2660','\u2665','\u2666'];
+function gameRotation(){
+  gameData={score:0,count:0,orig:[],correctRot:[],options:[]};
+  return `<div class="header"><span class="back" onclick="pop()">&#8249;</span><span class="title">图形旋转</span></div>
+  <div class="content">
+    <div class="stat-box"><div class="stat"><div class="val" id="rtScore">0</div><div class="lbl">正确数</div></div><div class="stat"><div class="val" id="rtCount">0</div><div class="lbl">总题数</div></div></div>
+    <p style="font-size:13px;color:var(--t2);text-align:center;margin-bottom:8px">找出原图旋转后的图形</p>
+    <p style="text-align:center;font-size:14px;margin-bottom:8px">原图：</p>
+    <div style="text-align:center;font-size:36px;margin-bottom:16px" id="rtOrig"></div>
+    <p style="text-align:center;font-size:14px;margin-bottom:8px">哪个是旋转后的？</p>
+    <div class="shape-area" id="rtOptions"></div>
+  </div>`;
+}
+function nextRotation(){
+  const len=rand(3,4);const orig=[];
+  for(let i=0;i<len;i++)orig.push(rotShapes[rand(0,rotShapes.length-1)]);
+  gameData.orig=orig;
+  const rotBy=rand(1,len-1);
+  const rotated=[...orig.slice(-rotBy),...orig.slice(0,-rotBy)];
+  gameData.correctRot=rotated;
+  const options=[rotated];
+  while(options.length<4){
+    const w=shuffle(orig);
+    if(!options.some(o=>o.join('')===w.join(''))&&w.join('')!==orig.join(''))options.push(w);
+  }
+  gameData.options=shuffle(options);
+  $('#rtOrig').innerHTML=orig.map(s=>`<span style="margin:0 4px">${s}</span>`).join('');
+  $('#rtOptions').innerHTML=gameData.options.map((o,i)=>`<div class="rot-option" onclick="rotAnswer(${i})">${o.map(s=>`<span style="display:block;font-size:18px">${s}</span>`).join('')}</div>`).join('');
+}
+function rotAnswer(i){
+  gameData.count++;$('#rtCount').textContent=gameData.count;
+  const ok=gameData.options[i].join('')===gameData.correctRot.join('');
+  if(ok){gameData.score++;$('#rtScore').textContent=gameData.score;toast('正确!','success')}
+  else{toast('错误!','error')}
+  setGTO(nextRotation,ok?600:1200);
+}
+
+/* ====== 初始化 ====== */
+function init(){
+  // 禁止双指缩放
+  document.addEventListener('gesturestart',e=>e.preventDefault());
+  document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+  // 初始化数字推理题型
+  if(!DB.get('nrSelected'))DB.set('nrSelected',['基础数列']);
+  render();
+}
+init();
+</script>
+</body>
+</html>
